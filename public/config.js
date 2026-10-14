@@ -66,6 +66,23 @@ export default {
         "target",
         "shared_entities"
       ]
+    },
+    {
+      "id": "claims",
+      "label": "Verified Claims",
+      "endpoint": "/api/claims",
+      "columns": [
+        "assertion",
+        "document",
+        "quote",
+        "source_classification",
+        "created_at"
+      ]
+    },
+    {
+      "id": "evidence-review",
+      "label": "Evidence Review",
+      "custom": "claims"
     }
   ]
 };

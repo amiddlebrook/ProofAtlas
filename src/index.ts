@@ -1,3 +1,4 @@
+import { advancedApi } from './advanced';
 import { withApi, body, first, list, execute, uid, now, json, required, oneOf, fail, limit, generate, count, type Env } from './core';
 type DocumentRow={id:string,title:string,source:string,classification:string,content:string,created_at:string};
 type Evidence={id:string,document_id:string,title:string,ordinal:number,body:string,score:number};
@@ -30,6 +31,7 @@ async function search(env:Env,question:string,max=8):Promise<Evidence[]> {
 }
 export async function api(req:Request,env:Env,url:URL):Promise<Response> {
   const p=url.pathname,m=req.method;
+  const enhanced=await advancedApi(req,env,url); if(enhanced) return enhanced;
   if(p==='/api/seed'&&m==='POST') {
     const n=await first<{n:number}>(env,'SELECT count(*) n FROM documents');if(count(n))return json({seeded:false});
     const samples=[{title:'Vendor contract CTR-1041',content:'Contract CTR-1041 with Alpine Data LLC. Renewal date: 2027-01-01. Total: $15,000. Procurement: contracts@example.com.'},{title:'Vendor invoice INV-8823',content:'Invoice INV-8823 for Alpine Data LLC. Contract reference CTR-1041. Amount: $15,000. Due date: 2027-01-10. Contact: contracts@example.com.'}];
@@ -52,7 +54,7 @@ export async function api(req:Request,env:Env,url:URL):Promise<Response> {
   }
   const doc=p.match(/^\/api\/documents\/([^/]+)$/);
   if(doc && m==='GET') { const d=await first<DocumentRow>(env,'SELECT * FROM documents WHERE id=?',doc[1]);if(!d) fail(404,'Document not found');return json({...d,entities:await list(env,'SELECT kind,value FROM entities WHERE document_id=?',d.id)}) }
-  if(doc && m==='DELETE') { await execute(env,'DELETE FROM entities WHERE document_id=?',doc[1]);await execute(env,'DELETE FROM chunks WHERE document_id=?',doc[1]);await execute(env,'DELETE FROM documents WHERE id=?',doc[1]);return json({deleted:true}) }
+  if(doc && m==='DELETE') { const n=await first<{n:number}>(env,'SELECT count(*) n FROM claims WHERE document_id=?',doc[1]);if(count(n))fail(409,'Document has verified claims; retain evidence provenance'); await execute(env,'DELETE FROM entities WHERE document_id=?',doc[1]);await execute(env,'DELETE FROM chunks WHERE document_id=?',doc[1]);await execute(env,'DELETE FROM documents WHERE id=?',doc[1]);return json({deleted:true}) }
   if(p==='/api/search' && m==='POST') { const b=await body(req);return json({query:required(b.query,'query',500),evidence:await search(env,required(b.query,'query',500))}) }
   if(p==='/api/ask' && m==='POST') {
     const b=await body(req),question=required(b.question,'question',1200),evidence=await search(env,question,8);
