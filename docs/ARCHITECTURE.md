@@ -37,3 +37,7 @@ Free-tier hosting deliberately limits scope. This is not a horizontally scalable
 ## Phase 3: Chain of custody
 
 Canonical SHA-256 collection digests capture current documents and claims. Snapshots are persisted in D1 and can be verified after later mutations. Hashing alone does not produce independently trusted timestamps, signatures, WORM storage or tamper-proof evidence; backups or outside anchors are required for adversarial audit.
+
+## Phase 4: Delegated API credentials
+
+`0004_access.sql` introduces expiring, revocable, SHA-256-hashed delegated credentials and an issuance/revocation audit. Authentication is enforced by `src/access.ts` from `withApi`, before any domain route executes. The shared API key policy does **not** implement object-level ACLs or tenant isolation. Access operations are confined to the root Worker `ADMIN_TOKEN`, and delegated keys are intentionally unable to administer credentials. See [`SECURITY.md`](SECURITY.md).
