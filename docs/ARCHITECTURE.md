@@ -33,3 +33,7 @@ All persistent data is stored in per-application D1. The application frontend an
 ## Design tradeoffs
 
 Free-tier hosting deliberately limits scope. This is not a horizontally scalable, multi-tenant production system; global SLAs, audited governance and paid provider budgets cannot be validated with tiny synthetic workloads. No paid upgrade should occur automatically.
+
+## Phase 3: Chain of custody
+
+Canonical SHA-256 collection digests capture current documents and claims. Snapshots are persisted in D1 and can be verified after later mutations. Hashing alone does not produce independently trusted timestamps, signatures, WORM storage or tamper-proof evidence; backups or outside anchors are required for adversarial audit.

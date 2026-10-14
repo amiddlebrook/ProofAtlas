@@ -83,6 +83,29 @@ export default {
       "id": "evidence-review",
       "label": "Evidence Review",
       "custom": "claims"
+    },
+    {
+      "id": "custody",
+      "label": "Chain of Custody",
+      "endpoint": "/api/provenance/snapshots",
+      "columns": [
+        "label",
+        "document_count",
+        "claim_count",
+        "created_at"
+      ],
+      "fields": [
+        {
+          "name": "label",
+          "type": "text",
+          "default": "Quarterly evidence anchor"
+        }
+      ],
+      "action": {
+        "title": "Verify evidence anchor",
+        "endpoint": "/api/provenance/snapshots/{id}/verify",
+        "input": []
+      }
     }
   ]
 };

@@ -1,0 +1,1 @@
+CREATE TABLE IF NOT EXISTS provenance_snapshots(id TEXT PRIMARY KEY,label TEXT NOT NULL,document_count INTEGER NOT NULL,claim_count INTEGER NOT NULL,manifest_hash TEXT NOT NULL,created_at TEXT NOT NULL);
