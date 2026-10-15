@@ -20,7 +20,7 @@ Traceable evidence retrieval and claim integrity.
 
 ## The problem
 
-The hardest part of editorial reading room is not drawing a dashboard—it is making consequential decisions inspectable, recoverable and accountable.
+Finding a matching document is not the same as proving a claim. References can drift, excerpts can change, and interrupted indexing can leave a misleading corpus. ProofAtlas binds claims to exact source text and integrity fingerprints, with staged ingestion and measurable retrieval checks.
 
 **ProofAtlas** is an engineering platform for traceable evidence retrieval and claim integrity. Its primary audience is **Researchers, analysts and teams reviewing evidence-heavy decisions**. Investigate source documents, cite precise excerpts and detect evidence drift.
 
