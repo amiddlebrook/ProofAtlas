@@ -4,6 +4,7 @@ export default {
   "accent": "#6fc7b2",
   "icon": "⌁",
   "sections": [
+    {"id":"citationlab","label":"Citation Ledger","custom":"domainlab"},
     {"id":"mission","label":"Reading Room","custom":"mission"},
     {"id":"registry","label":"Records Explorer","custom":"registry"},
     {

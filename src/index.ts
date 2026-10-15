@@ -1,3 +1,4 @@
+import {domainLabApi} from './domain-lab';
 import {agentApi} from './agent';
 import {decisionApi} from './decision';
 import {studioApi} from './studio';
@@ -38,6 +39,7 @@ export async function api(req:Request,env:Env,url:URL):Promise<Response> {
   const decision=await decisionApi(req,env,url); if(decision) return decision;
   const studio=await studioApi(req,env,url); if(studio) return studio;
   const enhanced=await advancedApi(req,env,url); if(enhanced) return enhanced;
+  const lab=await domainLabApi(req,env,url); if(lab) return lab;
   if(p==='/api/seed'&&m==='POST') {
     const n=await first<{n:number}>(env,'SELECT count(*) n FROM documents');if(count(n))return json({seeded:false});
     const samples=[{title:'Vendor contract CTR-1041',content:'Contract CTR-1041 with Alpine Data LLC. Renewal date: 2027-01-01. Total: $15,000. Procurement: contracts@example.com.'},{title:'Vendor invoice INV-8823',content:'Invoice INV-8823 for Alpine Data LLC. Contract reference CTR-1041. Amount: $15,000. Due date: 2027-01-10. Contact: contracts@example.com.'}];
