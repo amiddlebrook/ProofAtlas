@@ -73,4 +73,15 @@ export async function api(req:Request,env:Env,url:URL):Promise<Response> {
   if(p==='/api/relationships' && m==='GET') return json({items:await list(env,'SELECT a.document_id source_id,b.document_id target_id,da.title source,db.title target,count(*) shared_entities FROM entities a JOIN entities b ON a.value=b.value AND a.kind=b.kind AND a.document_id<b.document_id JOIN documents da ON da.id=a.document_id JOIN documents db ON db.id=b.document_id GROUP BY a.document_id,b.document_id ORDER BY shared_entities DESC LIMIT ?',limit(url))});
   return fail(404,'Unknown API route');
 }
-export default {fetch(req:Request,env:Env){return withApi(req,env,api)}};
+export default {
+ fetch(req:Request,env:Env){return withApi(req,env,api)},
+ async scheduled(controller:{cron:string},env:Env):Promise<void> {
+  // Scheduled events are Cloudflare-internal. Never expose this action through HTTP.
+  if(controller.cron!=='0 4 * * *')throw new Error('Unknown maintenance schedule');
+  const {cleanupWriteQuota}=await import('./write-quota');
+  const removed=await cleanupWriteQuota(env);
+  await execute(env,`INSERT INTO maintenance_status(job,ran_at,rows_pruned) VALUES(?,?,?)
+  ON CONFLICT(job) DO UPDATE SET ran_at=excluded.ran_at,rows_pruned=excluded.rows_pruned`,
+  'write-quota',now(),removed);
+ }
+};
