@@ -1,3 +1,4 @@
+import {studioApi} from './studio';
 import { advancedApi } from './advanced';
 import { withApi, body, first, list, execute, uid, now, json, required, oneOf, fail, limit, generate, count, type Env } from './core';
 type DocumentRow={id:string,title:string,source:string,classification:string,content:string,created_at:string};
@@ -31,6 +32,7 @@ async function search(env:Env,question:string,max=8):Promise<Evidence[]> {
 }
 export async function api(req:Request,env:Env,url:URL):Promise<Response> {
   const p=url.pathname,m=req.method;
+  const studio=await studioApi(req,env,url); if(studio) return studio;
   const enhanced=await advancedApi(req,env,url); if(enhanced) return enhanced;
   if(p==='/api/seed'&&m==='POST') {
     const n=await first<{n:number}>(env,'SELECT count(*) n FROM documents');if(count(n))return json({seeded:false});
