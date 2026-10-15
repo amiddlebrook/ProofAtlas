@@ -1,8 +1,8 @@
 /** Bounded, operator-driven, read-only AI agent. No network tool or arbitrary SQL. */
 import {body,first,list,json,fail,required,uid,now,generate,type Env} from './core';
 const TOOLS = {
- "search_documents": {sql:"SELECT id,title,source,classification,substr(content,1,700) excerpt FROM documents WHERE title LIKE ? OR content LIKE ? ORDER BY created_at DESC LIMIT 8",filter:true},
- "recent_claims": {sql:"SELECT c.id,c.assertion,c.quote,d.title source_title,d.source FROM claims c JOIN documents d ON d.id=c.document_id ORDER BY c.created_at DESC LIMIT 12",filter:false},
+ "search_documents": {sql:"SELECT id,title,source,classification,substr(content,1,700) excerpt FROM ready_documents WHERE title LIKE ? OR content LIKE ? ORDER BY created_at DESC LIMIT 8",filter:true},
+ "recent_claims": {sql:"SELECT c.id,c.assertion,c.quote,d.title source_title,d.source FROM claims c JOIN ready_documents d ON d.id=c.document_id ORDER BY c.created_at DESC LIMIT 12",filter:false},
  "open_casebooks": {sql:"SELECT id,title,question,status FROM investigation_cases WHERE status='open' ORDER BY updated_at DESC LIMIT 15",filter:false}
 } as const;
 export const TOOL_NAMES=Object.keys(TOOLS);

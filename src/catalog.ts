@@ -3,7 +3,7 @@ type Definition = {label:string; table:string; projection:string; search:string[
 const registry:Record<string,Definition> = {
   "documents": {
     "label": "Document index",
-    "table": "documents",
+    "table": "ready_documents",
     "projection": "id,title,source,classification,substr(content,1,200) AS excerpt,created_at",
     "search": [
       "title",

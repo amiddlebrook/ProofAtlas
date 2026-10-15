@@ -5,18 +5,18 @@ export async function fingerprint(value:string):Promise<string>{const bytes=new 
 export function locateQuote(chunk:string,quote:string):{offset:number,length:number}|null{const offset=chunk.indexOf(quote);return offset===-1?null:{offset,length:quote.length}}
 
 async function collectionManifest(env:Env){
- const documents=await list<{id:string;content:string;classification:string;title:string}>(env,'SELECT id,title,classification,content FROM documents ORDER BY id');
- const chunks=await list<{id:string;document_id:string;ordinal:number;body:string}>(env,'SELECT id,document_id,ordinal,body FROM chunks ORDER BY document_id,ordinal,id');
- const claims=await list<{id:string;document_id:string;chunk_id:string;quote:string;assertion:string;sha256:string}>(env,'SELECT id,document_id,chunk_id,quote,assertion,sha256 FROM claims ORDER BY id');
+ const documents=await list<{id:string;content:string;classification:string;title:string}>(env,'SELECT id,title,classification,content FROM ready_documents ORDER BY id');
+ const chunks=await list<{id:string;document_id:string;ordinal:number;body:string}>(env,'SELECT c.id,c.document_id,c.ordinal,c.body FROM chunks c JOIN ready_documents d ON d.id=c.document_id ORDER BY c.document_id,c.ordinal,c.id');
+ const claims=await list<{id:string;document_id:string;chunk_id:string;quote:string;assertion:string;sha256:string}>(env,'SELECT c.id,c.document_id,c.chunk_id,c.quote,c.assertion,c.sha256 FROM claims c JOIN ready_documents d ON d.id=c.document_id ORDER BY c.id');
  const canonical=JSON.stringify({schema:1,documents,chunks,claims});
  return {schema_version:1,document_count:documents.length,claim_count:claims.length,sha256:await fingerprint(canonical)};
 }
 export async function advancedApi(req:Request,env:Env,url:URL):Promise<Response|null>{
  const p=url.pathname,m=req.method;
- if(p==='/api/claims'&&m==='GET')return json({items:await list(env,'SELECT c.id,c.assertion,c.quote,c.source_classification,c.created_at,d.title document,c.document_id,c.chunk_id FROM claims c JOIN documents d ON d.id=c.document_id ORDER BY c.created_at DESC LIMIT ?',limit(url))});
+ if(p==='/api/claims'&&m==='GET')return json({items:await list(env,'SELECT c.id,c.assertion,c.quote,c.source_classification,c.created_at,d.title document,c.document_id,c.chunk_id FROM claims c JOIN ready_documents d ON d.id=c.document_id ORDER BY c.created_at DESC LIMIT ?',limit(url))});
  const add=p.match(/^\/api\/documents\/([^/]+)\/claims$/);
  if(add&&m==='POST'){
-  const doc=await first<{id:string,classification:string}>(env,'SELECT id,classification FROM documents WHERE id=?',add[1]);if(!doc)fail(404,'Document not found');
+  const doc=await first<{id:string,classification:string}>(env,'SELECT id,classification FROM ready_documents WHERE id=?',add[1]);if(!doc)fail(404,'Document not found');
   const b=await body(req),quote=required(b.quote,'quote',1200),assertion=required(b.assertion,'assertion',1000);
   const passages=await list<Chunk>(env,'SELECT id,document_id,ordinal,body FROM chunks WHERE document_id=? ORDER BY ordinal',doc.id);
   const matching=passages.find(c=>locateQuote(c.body,quote)!==null);
@@ -29,7 +29,7 @@ export async function advancedApi(req:Request,env:Env,url:URL):Promise<Response|
  if(check&&m==='GET'){
   const claim=await first<Claim & {source_classification:string}>(env,'SELECT * FROM claims WHERE id=?',check[1]);if(!claim)fail(404,'Claim not found');
   const chunk=await first<Chunk>(env,'SELECT * FROM chunks WHERE id=? AND document_id=?',claim.chunk_id,claim.document_id);
-  const document=await first<{classification:string}>(env,'SELECT classification FROM documents WHERE id=?',claim.document_id);
+  const document=await first<{classification:string}>(env,'SELECT classification FROM ready_documents WHERE id=?',claim.document_id);
   const present=Boolean(chunk&&locateQuote(chunk.body,claim.quote));const intact=Boolean(chunk&&await fingerprint(chunk.body)===claim.sha256);
   const classificationIntact=Boolean(document&&document.classification===claim.source_classification);
   return json({id:claim.id,verified:present&&intact&&classificationIntact,source_present:present,source_unchanged:intact,classification_unchanged:classificationIntact,document_id:claim.document_id,chunk_id:claim.chunk_id,offset:chunk?locateQuote(chunk.body,claim.quote)?.offset??null:null});

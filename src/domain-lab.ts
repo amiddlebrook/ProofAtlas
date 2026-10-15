@@ -13,7 +13,7 @@ export async function domainLabApi(req:Request,env:Env,url:URL):Promise<Response
  if(url.pathname!=='/api/lab/citations'||req.method!=='GET')return null;
  const maximum=limit(url,100);
  const rows=await list<Row>(env,`SELECT c.id,c.document_id,c.chunk_id,c.quote,c.assertion,c.sha256,c.source_classification,k.body,k.document_id chunk_document_id,d.classification document_classification,d.title
- FROM claims c LEFT JOIN chunks k ON k.id=c.chunk_id LEFT JOIN documents d ON d.id=c.document_id ORDER BY c.created_at DESC,c.id DESC LIMIT ?`,maximum);
+ FROM claims c LEFT JOIN chunks k ON k.id=c.chunk_id LEFT JOIN ready_documents d ON d.id=c.document_id ORDER BY c.created_at DESC,c.id DESC LIMIT ?`,maximum);
  const findings=await Promise.all(rows.map(verifyCitation));
  return json({checked:findings.length,verified:findings.filter(x=>x.verified).length,at_risk:findings.filter(x=>!x.verified).length,findings,scope:`Most recent ${maximum} claims; internal integrity check, not external authenticity verification`});
 }

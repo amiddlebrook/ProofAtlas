@@ -8,12 +8,12 @@ export async function decisionApi(req:Request,env:Env,url:URL):Promise<Response|
  const match=p.match(/^\/api\/decision\/casebooks\/([0-9a-f-]{36})$/);
  if(match&&m==='GET'){
   const row=await first(env,'SELECT * FROM investigation_cases WHERE id=?',match[1]);if(!row)fail(404,'Casebook not found');
-  return json({case:row,sources:await list(env,'SELECT s.document_id,s.rationale,s.added_at,d.title,d.source,d.classification FROM investigation_sources s JOIN documents d ON d.id=s.document_id WHERE s.case_id=? ORDER BY s.added_at',match[1]),notes:await list(env,'SELECT id,note,created_at FROM investigation_notes WHERE case_id=? ORDER BY created_at DESC LIMIT 150',match[1])});
+  return json({case:row,sources:await list(env,'SELECT s.document_id,s.rationale,s.added_at,d.title,d.source,d.classification FROM investigation_sources s JOIN ready_documents d ON d.id=s.document_id WHERE s.case_id=? ORDER BY s.added_at',match[1]),notes:await list(env,'SELECT id,note,created_at FROM investigation_notes WHERE case_id=? ORDER BY created_at DESC LIMIT 150',match[1])});
  }
  const source=p.match(/^\/api\/decision\/casebooks\/([0-9a-f-]{36})\/sources$/);
  if(source&&m==='POST'){
   const b=await body(req,12000);const casebook=await first<{status:string}>(env,'SELECT status FROM investigation_cases WHERE id=?',source[1]);if(!casebook)fail(404,'Casebook not found');if(casebook.status==='closed')fail(409,'Closed casebooks are read-only');
-  const documentId=required(b.document_id,'document_id',100);if(!await first(env,'SELECT id FROM documents WHERE id=?',documentId))fail(404,'Document not found');
+  const documentId=required(b.document_id,'document_id',100);if(!await first(env,'SELECT id FROM ready_documents WHERE id=?',documentId))fail(404,'Document not found');
   const rationale=required(b.rationale,'rationale',1600);const statement=await env.DB.prepare('INSERT OR IGNORE INTO investigation_sources(case_id,document_id,rationale,added_at) VALUES(?,?,?,?)').bind(source[1],documentId,rationale,now()).run();if(!statement.meta?.changes)fail(409,'Source is already attached');return json({attached:true},201);
  }
  const note=p.match(/^\/api\/decision\/casebooks\/([0-9a-f-]{36})\/notes$/);

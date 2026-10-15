@@ -3,7 +3,7 @@ export async function studioApi(req:Request,env:Env,url:URL):Promise<Response|nu
  if(url.pathname!=='/api/studio/evidence-map')return null;
  if(req.method!=='GET')return Response.json({error:'Method not allowed'},{status:405});
  const [documents,entities,claims]=await Promise.all([
-  list<{id:string;title:string;classification:string;source:string;characters:number}>(env,'SELECT id,title,classification,source,LENGTH(content) characters FROM documents ORDER BY created_at DESC LIMIT 80'),
+  list<{id:string;title:string;classification:string;source:string;characters:number}>(env,'SELECT id,title,classification,source,LENGTH(content) characters FROM ready_documents ORDER BY created_at DESC LIMIT 80'),
   list<{document_id:string;kind:string;value:string}>(env,'SELECT document_id,kind,value FROM entities ORDER BY document_id,kind,value LIMIT 700'),
   list<{document_id:string;n:number}>(env,'SELECT document_id,COUNT(*) n FROM claims GROUP BY document_id LIMIT 80')
  ]);
