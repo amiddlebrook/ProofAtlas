@@ -1,0 +1,1 @@
+ProofAtlas connects claims to exact source evidence and checks document integrity. It separates incomplete ingestion from searchable evidence and keeps provenance reviewable.
