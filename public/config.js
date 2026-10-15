@@ -4,6 +4,8 @@ export default {
   "accent": "#6fc7b2",
   "icon": "⌁",
   "sections": [
+    {"id":"agent","label":"Research Agent","custom":"agent"},
+    {"id":"decisions","label":"Casebooks","custom":"decisions"},
     {"id":"ops","label":"API Activity","custom":"ops"},
     {"id":"studio","label":"Evidence Atlas","custom":"studio"},
     {
