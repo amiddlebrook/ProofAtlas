@@ -1,0 +1,10 @@
+/* ProofAtlas / Phase 23 — archival linen, burgundy annotation, teal references, gold provenance. */
+:root{--bg:#f2f0e7;--surface:#fffdf8;--surface2:#e9ebe5;--line:#cdd5d0;--text:#28343b;--muted:#566a70;--accent:#0d6370;--info:#275a83;--success:#317058;--warning:#95631e;color-scheme:light}
+body{background:#f2f0e7;color:#28343b}.sidebar{background:#faf9f3;border-color:#c6d3cb}.nav button.active,.nav button:hover{background:#e1eeeb;color:#165563;border-left:3px solid #8d4d49}
+.pa16{background:#f8f6ef;color:#2e3c43}.pa16-mast{border-color:#a38b6b}.pa16-seal,.pa16-stamp{color:#8f503f;border-color:#b79b7a}.pa16-index{background:#e8eee9}.pa17-claimfocus{border-top:3px solid #995847}
+.pa-document-stamp{border-color:#985743;color:#88503b}.pa-masthead h3 i,.pa-overline{color:#8d5344}.pa-reader{background:#fffdf7;border-color:#d6d3c8}
+.lab-hero{background:linear-gradient(115deg,#fffdfa,#f2f2ea 68%,#f4e9db);border-left:5px solid #a66b42}.lab-kicker{color:#8a4a41;opacity:1}
+.lab-panel{background:#fffdf8;border:1px solid #c6d5cf}.lab-panel button,.btn{background:#165f69;color:white}.lab-stats span{background:#e6f2ed;border:1px solid #b4d0c3;color:#27644d}.lab-stats span:nth-child(2){background:#e9f0f5;border-color:#b6cbd9;color:#245678}.lab-stats span:nth-child(3){background:#f9ebe2;border-color:#e5c2b5;color:#92463e}
+.lab-ledger-row{background:#f4f5ef;border-left-color:#3e7886}.lab-ledger-row:has(.bad){border-left-color:#a34d43;background:#fcf3ee}.lab-status.good{color:#286950}.lab-status.bad{color:#98413b}
+.lab-filter{background:#faf9f3}.lab-panel input{background:#fff;color:#273a43;border:1px solid #9caeb1}
+:where(button,a,input,select,textarea):focus-visible{outline:3px solid #286d81;outline-offset:2px}
