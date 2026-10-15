@@ -33,3 +33,11 @@ Documents are treated as primary sources, with classification, excerpt, custody,
 ## Unfinished validation
 
 Full visual regression across Chromium/Firefox/WebKit, keyboard-only audits, screen reader testing, axe accessibility reports, usability testing with real users, full E2E actions against a seeded isolated D1 database and cross-browser responsive evaluation remain required before calling this production-ready.
+
+## Autonomous analysis cockpit — Phase 8
+
+The agent workspace uses the **THE INVESTIGATION DESK** interaction model (`pa-dossier`) rather than a generic shared widget. Its session list, report reader, form placement, density, typography, and trace hierarchy are tailored to ProofAtlas. Real metrics reflect persisted D1 sessions and observations. Includes keyboard focus, reduced-motion support, and safe event rendering.
+
+## Autonomous analysis cockpit — Phase 8
+
+The agent workspace uses the **THE INVESTIGATION DESK** interaction model (`pa-dossier`) rather than a generic shared widget. Its session list, report reader, form placement, density, typography, and trace hierarchy are tailored to ProofAtlas. Real metrics reflect persisted D1 sessions and observations. Includes keyboard focus, reduced-motion support, and safe event rendering.
