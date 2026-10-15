@@ -1,3 +1,5 @@
+> **Phase 30:** Deployments now fail on repository/Worker/D1 identity mismatch before migrations. This is a single-application deployment guard, not multitenant SSO. See [deployment boundaries](docs/PHASE30_DEPLOYMENT_BOUNDARIES.md).
+
 > **Phase 29:** Offline SQLite/D1-schema disaster-recovery rehearsal is enforced in both GitHub CI and deployment; live production D1 restoration is still unverified. See [recovery assurance](docs/PHASE29_RECOVERY_ASSURANCE.md).
 
 > **Phase 28:** New documents remain hidden from retrieval until indexing is fully complete; interrupted imports fail closed and are cleaned up. See [staged ingestion](docs/PHASE28_STAGED_INGESTION.md).
