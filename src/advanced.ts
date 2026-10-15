@@ -27,10 +27,12 @@ export async function advancedApi(req:Request,env:Env,url:URL):Promise<Response|
  }
  const check=p.match(/^\/api\/claims\/([^/]+)\/verify$/);
  if(check&&m==='GET'){
-  const claim=await first<Claim>(env,'SELECT * FROM claims WHERE id=?',check[1]);if(!claim)fail(404,'Claim not found');
+  const claim=await first<Claim & {source_classification:string}>(env,'SELECT * FROM claims WHERE id=?',check[1]);if(!claim)fail(404,'Claim not found');
   const chunk=await first<Chunk>(env,'SELECT * FROM chunks WHERE id=? AND document_id=?',claim.chunk_id,claim.document_id);
+  const document=await first<{classification:string}>(env,'SELECT classification FROM documents WHERE id=?',claim.document_id);
   const present=Boolean(chunk&&locateQuote(chunk.body,claim.quote));const intact=Boolean(chunk&&await fingerprint(chunk.body)===claim.sha256);
-  return json({id:claim.id,verified:present&&intact,source_present:present,source_unchanged:intact,document_id:claim.document_id,chunk_id:claim.chunk_id,offset:chunk?locateQuote(chunk.body,claim.quote)?.offset??null:null});
+  const classificationIntact=Boolean(document&&document.classification===claim.source_classification);
+  return json({id:claim.id,verified:present&&intact&&classificationIntact,source_present:present,source_unchanged:intact,classification_unchanged:classificationIntact,document_id:claim.document_id,chunk_id:claim.chunk_id,offset:chunk?locateQuote(chunk.body,claim.quote)?.offset??null:null});
  }
 
  if(p==='/api/provenance/snapshots'&&m==='GET')return json({items:await list(env,'SELECT id,label,document_count,claim_count,manifest_hash,created_at FROM provenance_snapshots ORDER BY created_at DESC LIMIT ?',limit(url))});
