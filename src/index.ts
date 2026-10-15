@@ -64,6 +64,24 @@ export async function api(req:Request,env:Env,url:URL):Promise<Response> {
   if(doc && m==='GET') { const d=await first<DocumentRow>(env,'SELECT * FROM documents WHERE id=?',doc[1]);if(!d) fail(404,'Document not found');return json({...d,entities:await list(env,'SELECT kind,value FROM entities WHERE document_id=?',d.id)}) }
   if(doc && m==='DELETE') { const n=await first<{n:number}>(env,'SELECT count(*) n FROM claims WHERE document_id=?',doc[1]);if(count(n))fail(409,'Document has verified claims; retain evidence provenance'); await execute(env,'DELETE FROM entities WHERE document_id=?',doc[1]);await execute(env,'DELETE FROM chunks WHERE document_id=?',doc[1]);await execute(env,'DELETE FROM documents WHERE id=?',doc[1]);return json({deleted:true}) }
   if(p==='/api/search' && m==='POST') { const b=await body(req);return json({query:required(b.query,'query',500),evidence:await search(env,required(b.query,'query',500))}) }
+  if(p==='/api/retrieval/evaluate' && m==='POST') {
+    const b=await body(req,16000),checks=b.checks,at=Number(b.k??5);
+    if(!Array.isArray(checks)||checks.length<1||checks.length>20)fail(400,'Provide 1–20 evaluation cases');
+    if(!Number.isSafeInteger(at)||at<1||at>8)fail(400,'k must be an integer from 1 to 8');
+    const available=new Set((await list<{id:string}>(env,'SELECT id FROM documents LIMIT 1000')).map(d=>d.id));
+    const cases=[];let hits=0,expectedTotal=0;
+    for(const item of checks){
+      const query=required(item?.query,'query',500),ids=item?.expected_document_ids;
+      if(!Array.isArray(ids)||ids.length<1||ids.length>20||ids.some(v=>typeof v!=='string'||!available.has(v))||new Set(ids).size!==ids.length)fail(422,'Each case needs 1–20 distinct known expected_document_ids');
+      const evidence=await search(env,query,at);
+      const found=[...new Set(evidence.map(v=>v.document_id))].slice(0,at);
+      const matched=found.filter(v=>ids.includes(v));
+      const missing=ids.filter(v=>!found.includes(v));
+      hits+=matched.length;expectedTotal+=ids.length;
+      cases.push({query,expected_document_ids:ids,retrieved_document_ids:found,matched_document_ids:matched,missing_document_ids:missing,precision_at_k:matched.length/at,recall_at_k:matched.length/ids.length});
+    }
+    return json({k:at,total_cases:cases.length,macro_precision_at_k:cases.reduce((sum,r)=>sum+r.precision_at_k,0)/cases.length,macro_recall_at_k:cases.reduce((sum,r)=>sum+r.recall_at_k,0)/cases.length,micro_precision:checks.length?hits/(checks.length*at):0,micro_recall:expectedTotal?hits/expectedTotal:0,cases,ground_truth:'caller_supplied',inference_calls:0,persisted:false});
+  }
   if(p==='/api/ask' && m==='POST') {
     const b=await body(req),question=required(b.question,'question',1200),evidence=await search(env,question,8);
     if(!evidence.length) return json({answer:'No matching passages were found. No answer generated.',evidence:[]});
