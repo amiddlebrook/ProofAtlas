@@ -4,6 +4,7 @@ export default {
   "accent": "#6fc7b2",
   "icon": "⌁",
   "sections": [
+    {"id":"registry","label":"Records Explorer","custom":"registry"},
     {
       "id": "atlas",
       "label": "Live Atlas",
