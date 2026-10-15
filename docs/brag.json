@@ -1,0 +1,23 @@
+{
+  "accent": "#F2BB78",
+  "background": "#101B23",
+  "hook": "EVERY CLAIM NEEDS A SOURCE.",
+  "subhook": "Open the document. Verify the quote. Inspect provenance.",
+  "feature1": "The reading room is the source.",
+  "feature2": "Evidence must remain intact.",
+  "proof": [
+    "SHA-256 source digests",
+    "Staged retrieval indexing",
+    "Citation integrity review"
+  ],
+  "mobileTitle": "Read the actual evidence.",
+  "mobileLines": [
+    "Inspect source-linked claims.",
+    "Track classification changes.",
+    "Keep provenance visible."
+  ],
+  "closing": "Proof belongs next to the claim.",
+  "closingLine": "Explore documents, claims and provenance.",
+  "share": "ProofAtlas connects claims to exact source evidence and checks document integrity. It separates incomplete ingestion from searchable evidence and keeps provenance reviewable.",
+  "name": "ProofAtlas"
+}
