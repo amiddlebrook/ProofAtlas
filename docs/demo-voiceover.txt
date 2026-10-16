@@ -1,0 +1,1 @@
+Meet ProofAtlas. Turn source documents into traceable evidence. Every claim links to an exact passage with integrity checks. Detect source drift, verify provenance, and review retrieval quality before trusting an answer.
